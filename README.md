@@ -1,30 +1,30 @@
 # NMFGOT-py
 NMFGOT: A Multi-view Learning Framework for the Microbiome and Metabolome Integrative Analysis with Optimal Transport Plan。
 
-This is the Python implementation of the JSNMF algorithm. Note that this implementation can employ GPU to speed up the code. 
+This is the Python implementation of the NMFGOT algorithm. Note that this implementation can employ GPU to speed up the code. 
 
-## 1. Installation
-You can use the following command to install JSNMF:
-```
-pip install JSNMF-py
-```
+## 1. Enviroment and dependent packages
+NMFGOT was developed in conda enviroment (python 3.11). The dependent packages includes:
+Numpy, bct, umap, ot, torch, scipy.
 
 ## 2. Usage
-The default number of maximum epochs to run, i.e. the `max_epochs` parameter, is set as 200. So it is quite simple to initialize a NMFGOT model with the following code:
+In the tutorial, we provided a demo to demonstrate the implementation of NMFGOT. It is quite simple to initialize a NMFGOT model with the following code:
 ```
-from JSNMF.model import JSNMF
-test_model = JSNMF(rna,atac)
+sys.path.append('C:/Users/PC/Desktop/NMFGOT/NMFGOT-py/')
+from Code import model
+from Code import utils
+
+test_model = model.NMFGOT(microbiome, metabolite)
 ```
 After initializing, run the model is also quite easy: 
 ```
 test_model.run()
 ```
-The result is saved in `test_model.result`, which is a dict, and the major output of JSNMF, the complete graph S, can be get with easy access:
+The result is saved in `test_model.result`, which is a dict, and the major output of NMFGOT, the complete graph S, can be get with easy access:
 ```
 S = test_model.result['S']
 ```
-`JSNMF` class also has other methods, you can use the `help` or `?` command for more details explanations of the methods.
-
+Noting that the current version of NMFGOT may have some issues, such as running slowly to compute the optimal transport distance. We will solve these issues and update the scripts soon. The matlab version of NMFGOT performs more stable and fast. If you have a problem in using it, please contact [me](chonghua_1983@yeah.net).
 
 ## 3. Tutorials
-Please refer to [here](https://github.com/chonghua-1983/NMFGOT/tree/main/Tutorials/demo1.py) for a simple illustration of the use of NMFGOT model, with clustering and visualization results shown. 
+Please refer to [here](https://github.com/chonghua-1983/NMFGOT-py/tree/main/Tutorials) for a simple illustration of the use of NMFGOT model, with clustering and visualization results shown. 
