@@ -14,7 +14,7 @@ sys.path.append('C:/Users/PC/Desktop/NMFGOT/NMFGOT-py/')
 from Code import model
 from Code import utils
 
-test_model = model.NMFGOT(microbiome, metabolite)
+test_model = model.NMFGOT(microbiome, metabolite, opt_A1, opt_A2)
 ```
 After initializing, run the model is also quite easy: 
 ```
