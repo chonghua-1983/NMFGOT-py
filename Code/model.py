@@ -30,12 +30,12 @@ class NMFGOT:
                  row: taxa, column: sample
     X2         : AnnData object that contains the data from metabolome, or other modality
                  row: metabolite, column: sample
-
+    A1,A2      : optimal transport similarity matrix for microbiome and metabolome data
     max_epochs : Number of max epochs to run, optinal, default is 200 epochs
 
    '''
 
-    def __init__(self, micro: AnnData, metab: AnnData, max_epochs: int = 200):
+    def __init__(self, micro: AnnData, metab: AnnData, A1, A2, max_epochs: int = 200):
         
         self.mic = micro
         self.met = metab
@@ -43,22 +43,32 @@ class NMFGOT:
         self.max_epochs = max_epochs
         self.num_c  = num_c = len(np.unique(self.label))
         self.embedding = None
+        self.A1 = A1  #
+        self.A2 = A2  #
         
         try:
             if  isspmatrix(micro.X):
                 self.X1 = torch.from_numpy(micro.X.toarray()).T.cuda()
                 self.X2 = torch.from_numpy(metab.X.toarray()).T.cuda()
+                self.A1 = torch.from_numpy(A1.toarray()).T.cuda()  #
+                self.A2 = torch.from_numpy(A2.toarray()).T.cuda()  #
             else:
                 self.X1 = torch.from_numpy(micro.X).T.cuda()
                 self.X2 = torch.from_numpy(metab.X).T.cuda()
+                self.A1 = torch.from_numpy(A1).T.cuda()   #
+                self.A2 = torch.from_numpy(A2).T.cuda()   #
 
         except:
             if isspmatrix(micro.X):
                 self.X1 = torch.from_numpy(micro.X.toarray()).T
                 self.X2 = torch.from_numpy(metab.X.toarray()).T
+                self.A1 = torch.from_numpy(A1.toarray()).T  #
+                self.A2 = torch.from_numpy(A2.toarray()).T  #
             else:
                 self.X1 = torch.from_numpy(micro.X).T
                 self.X2 = torch.from_numpy(metab.X).T
+                self.A1 = torch.from_numpy(A1).T   #
+                self.A2 = torch.from_numpy(A2).T   #
 
 
     def parameter_selection(self):
@@ -104,14 +114,16 @@ class NMFGOT:
         Inits['D2'] = torch.diag(S2.sum(0))
         Inits['L2'] = Inits['D2'] - Inits['A2']
         
-        opt_A1 = ot_mi(self.X1, 10)
+        #opt_A1 = ot_mi(self.X1, 10)
         #opt_A1 = ot_mi2(self.X1)
+        opt_A1 = self.A1
         print('opt1 done')
         opt_A1 = torch.Tensor(opt_A1)
         opt_D1 = torch.diag(opt_A1.sum(0))
         
-        opt_A2 = ot_mi(self.X2, 10)
+        #opt_A2 = ot_mi(self.X2, 10)
         #opt_A2 = ot_mi2(self.X2)
+        opt_A2 = self.A2
         print('opt2 done')
         opt_A2 = torch.Tensor(opt_A2)
         opt_D2 = torch.diag(opt_A2.sum(0))

@@ -141,34 +141,44 @@ def ot_mi(X,bins):
     # row: features m;   column: samples n
     
     X = X.cpu()
-    X_spar = sp.csr_matrix(X.numpy())
+    X_spar = sp.csr_matrix(X) #.numpy()
         
     anndata_X = AnnData(X_spar.T)
-    sc.pp.highly_variable_genes(anndata_X, min_mean=0.0125, max_mean=3, min_disp=0.5)
+    sc.pp.normalize_total(anndata_X, target_sum=1e4)
+    sc.pp.log1p(anndata_X)
+    
+    sc.pp.highly_variable_genes(anndata_X, n_top_genes=100) #min_mean=0.0125, max_mean=3, min_disp=0.5,
     sc.pl.highly_variable_genes(anndata_X)
     data = anndata_X[:, anndata_X.var.highly_variable] 
-    X = data.X
-    X = X[:,1:100].T
+    X = data.X   # row: sample   column: feas
     X = X.todense()
     X = torch.tensor(X)
-    
-    m, n = X.shape
+    #X[X < 1e-10] = 1e-10
+
+    n, m = X.shape  
     matMI = torch.zeros((m, m)).cuda()
     for ix in np.arange(m):
         for jx in np.arange(ix+1,m):
-            matMI[ix,jx]= calc_MI(X[ix,:],X[jx,:],bins)
+            matMI[ix,jx]= calc_MI(X[:,ix],X[:,jx],bins)
     
     matMI = matMI + matMI.T
-    matMI = torch.tensor(matMI).cuda()
+    D = 1 - matMI
+    D = D - torch.diag(torch.diag(D))
+    D = torch.tensor(D).cuda()
+    
         
    # compute ot distance/ emd distance
     ot_dist = torch.zeros((n, n)).cuda()
-    col_sums = X.sum(dim=0)
-    X = X / col_sums.view(1, -1)
+    col_sums = X.sum(dim=1)
+    X = X / col_sums.view(-1, 1)
     
+    D = D.cpu()
+    D_array = np.array(D)
     for i in np.arange(n):
         for j in np.arange(i+1, n):
-            ot_dist[i,j] = ot.emd2(X[:,i],X[:,j],matMI)
+            a = np.array(X[i,:])
+            b = np.array(X[j,:])
+            ot_dist[i,j] = ot.emd2(a,b,D_array)
     
     ot_dist = ot_dist + ot_dist.T
     ot_dist = torch.Tensor(ot_dist)
