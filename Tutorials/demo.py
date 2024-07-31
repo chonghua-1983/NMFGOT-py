@@ -33,11 +33,6 @@ mic = anndata.AnnData(X1.T,dtype = np.float64)
 met = anndata.AnnData(X2.T,dtype = np.float64)
 mic.obs['sampletype'] = label
 
-#import scipy.io as scio
-# A1 = A1.cpu()
-# A2 = A2.cpu()
-# scio.savemat('opt_A.mat', {'opt_A1': A1, 'opt_A2': A2})
-
 # get the taxa and metabolites
 # taxa = np.array([ val[0]  for val in mat['taxa'][:,0]])
 # mets = np.array([ val[0]  for val in mat['mets'][:,0]])
@@ -47,9 +42,11 @@ from utils import ot_mi
 import scipy.sparse as sp
 import ot
 
+# compute optimal transport distance
 A1 = ot_mi(X1, 10)
 A2 = ot_mi(X2, 10)
 
+# run NMFGOT
 test_model = model.NMFGOT(mic, met, A1, A2)
 test_model.run()
 
