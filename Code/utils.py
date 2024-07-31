@@ -140,7 +140,7 @@ import scipy.sparse as sp
 def ot_mi(X,bins):
     # row: features m;   column: samples n
     
-    X = X.cpu()
+    # X = X.cpu()
     X_spar = sp.csr_matrix(X) #.numpy()
         
     anndata_X = AnnData(X_spar.T)
