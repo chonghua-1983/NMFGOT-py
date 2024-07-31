@@ -19,13 +19,25 @@ from utils import ot_mi
 import scipy.sparse as sp
 import ot
 
+# load data
+mat = scipy.io.loadmat('Tutorials/data/data1.mat')
+X1 = mat['X1']
+X2 = mat['X2']
+label = mat['label'][:,0]
+X2= np.log(X2+1)
+
+# create AnnData object
+mic = anndata.AnnData(X1,dtype = np.float64)
+met = anndata.AnnData(X2,dtype = np.float64)
+mic.obs['sampletype'] = label
+
 # compute the optimal transport distance
 A1 = ot_mi(X1, 10)
 A2 = ot_mi(X2, 10)
 ```
 Initializing model 
 ```
-test_model = model.NMFGOT(microbiome, metabolite, opt_A1, opt_A2)
+test_model = model.NMFGOT(mic, met, opt_A1, opt_A2)
 ```
 After initializing, run the model is also quite easy: 
 ```
