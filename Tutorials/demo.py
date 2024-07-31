@@ -42,9 +42,13 @@ mic.obs['sampletype'] = label
 # taxa = np.array([ val[0]  for val in mat['taxa'][:,0]])
 # mets = np.array([ val[0]  for val in mat['mets'][:,0]])
 
-ot_sim = scipy.io.loadmat('opt_A.mat')
-A1 = ot_sim['opt_A1']
-A2 = ot_sim['opt_A2']
+from anndata import AnnData
+from utils import ot_mi
+import scipy.sparse as sp
+import ot
+
+A1 = ot_mi(X1, 10)
+A2 = ot_mi(X2, 10)
 
 test_model = model.NMFGOT(mic, met, A1, A2)
 test_model.run()
