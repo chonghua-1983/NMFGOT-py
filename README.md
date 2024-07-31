@@ -24,7 +24,7 @@ A1 = ot_mi(X1, 10)
 A2 = ot_mi(X2, 10)
 
 ```
-initializing the model 
+Initializing model 
 ```
 test_model = model.NMFGOT(microbiome, metabolite, opt_A1, opt_A2)
 ```
