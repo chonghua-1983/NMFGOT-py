@@ -22,7 +22,6 @@ import ot
 # compute the optimal transport distance
 A1 = ot_mi(X1, 10)
 A2 = ot_mi(X2, 10)
-
 ```
 Initializing model 
 ```
