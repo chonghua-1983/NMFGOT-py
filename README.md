@@ -14,6 +14,15 @@ sys.path.append('C:/Users/PC/Desktop/NMFGOT/NMFGOT-py/')
 from Code import model
 from Code import utils
 
+from anndata import AnnData
+from utils import ot_mi
+import scipy.sparse as sp
+import ot
+
+# compute the optimal transport distance
+A1 = ot_mi(X1, 10)
+A2 = ot_mi(X2, 10)
+
 test_model = model.NMFGOT(microbiome, metabolite, opt_A1, opt_A2)
 ```
 After initializing, run the model is also quite easy: 
